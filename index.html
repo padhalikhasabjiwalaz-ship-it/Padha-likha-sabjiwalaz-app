@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#166534">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<title>पढ़ा-लिखा सब्जीवालाज | रोज़ का हिसाब</title>
+<style>
+:root{--green:#166534;--green2:#15803d;--bg:#f3f7f3;--card:#fff;--ink:#17231a;--muted:#66736a;--line:#e2e9e2;--red:#b42318;--blue:#175cd3}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Noto Sans Devanagari",sans-serif}
+header{background:linear-gradient(135deg,#14532d,#16a34a);color:#fff;padding:22px 16px 18px;border-radius:0 0 22px 22px}
+header h1{font-size:21px;margin:0 0 5px}header p{margin:0;font-size:13px;opacity:.9}
+main{max-width:760px;margin:auto;padding:14px 13px 36px}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:14px 0}
+.tabs button{border:1px solid var(--line);background:#fff;border-radius:12px;padding:10px 4px;font-size:12px;font-weight:700;color:#334238}
+.tabs button.active{background:var(--green);color:#fff;border-color:var(--green)}
+.panel{display:none}.panel.active{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:15px;margin:10px 0;box-shadow:0 2px 8px #1233}
+h2{font-size:18px;margin:0 0 13px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+label{display:block;font-size:13px;font-weight:650;margin:9px 0 5px}
+input,select{width:100%;border:1px solid #cbd5cc;border-radius:10px;padding:12px;font-size:16px;background:#fff;color:var(--ink)}
+button.primary{background:var(--green);color:#fff;border:0;border-radius:11px;padding:13px 16px;font-size:15px;font-weight:750;width:100%;margin-top:13px}
+button.secondary{background:#eef6ef;color:var(--green);border:1px solid #c8dfcb;border-radius:9px;padding:8px 10px;font-weight:650}
+button.danger{background:#fff0ef;color:var(--red);border:1px solid #f3c7c3;border-radius:9px;padding:8px 10px}
+.metric{background:#f7faf7;border:1px solid var(--line);border-radius:12px;padding:12px}
+.metric small{color:var(--muted);display:block;font-size:12px}.metric strong{font-size:21px;display:block;margin-top:3px}
+.total{font-size:22px;color:var(--green);font-weight:800;margin-top:10px}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;padding:9px 5px;border-bottom:1px solid var(--line)}th{color:var(--muted);font-weight:700}
+.tablewrap{overflow-x:auto}.empty{color:var(--muted);font-size:13px;padding:12px 0}
+.note{font-size:12px;color:var(--muted);line-height:1.5}
+.rowhead{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.pill{font-size:11px;background:#e8f5e9;color:var(--green);padding:5px 8px;border-radius:30px;font-weight:700}
+footer{text-align:center;color:var(--muted);font-size:11px;padding:15px}
+@media(max-width:420px){.tabs button{font-size:11px;padding:9px 2px}.grid{gap:8px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>🌿 पढ़ा-लिखा सब्जीवालाज</h1>
+  <p>मंडी खरीद • बिक्री • दैनिक और मासिक हिसाब</p>
+</header>
+<main>
+  <div class="tabs">
+    <button class="active" data-tab="purchase">🛒 मंडी खरीद</button>
+    <button data-tab="sales">💰 बिक्री</button>
+    <button data-tab="daily">📊 दैनिक</button>
+    <button data-tab="monthly">📅 मासिक</button>
+  </div>
+
+  <section id="purchase" class="panel active">
+    <div class="card">
+      <h2>मंडी खरीद दर्ज करें</h2>
+      <label>तारीख</label><input type="date" id="pDate">
+      <label>सब्जी / फल का नाम</label><input id="pName" list="items" placeholder="जैसे आलू">
+      <datalist id="items"><option>आलू</option><option>प्याज</option><option>टमाटर</option><option>खीरा</option><option>घीया</option><option>गोभी</option><option>गाजर</option><option>मूली</option><option>भिंडी</option><option>केला</option></datalist>
+      <div class="grid">
+        <div><label>कितने किलो?</label><input id="pKg" type="number" min="0" step="0.01" placeholder="किलो"></div>
+        <div><label>खरीद भाव (₹/किलो)</label><input id="pRate" type="number" min="0" step="0.01" placeholder="रुपये"></div>
+      </div>
+      <div class="total" id="pTotal">कुल खरीद: ₹0.00</div>
+      <button class="primary" id="savePurchase">खरीद सेव करें</button>
+    </div>
+    <div class="card"><div class="rowhead"><h2>इस तारीख की खरीद</h2><span class="pill" id="pCount">0 एंट्री</span></div><div id="purchaseList"></div></div>
+  </section>
+
+  <section id="sales" class="panel">
+    <div class="card">
+      <h2>बिक्री दर्ज करें</h2>
+      <label>तारीख</label><input type="date" id="sDate">
+      <label>सब्जी / फल का नाम</label><input id="sName" list="items" placeholder="जैसे आलू">
+      <div class="grid">
+        <div><label>बेचे गए किलो</label><input id="sKg" type="number" min="0" step="0.01" placeholder="किलो"></div>
+        <div><label>कुल बिक्री (₹)</label><input id="sAmount" type="number" min="0" step="0.01" placeholder="रुपये"></div>
+      </div>
+      <p class="note">एक तारीख में एक सब्जी की एक ही बिक्री एंट्री रखें। दिनभर की बिक्री जोड़कर दर्ज करें। उसी सब्जी की एंट्री दोबारा सेव करने पर पुरानी एंट्री अपडेट होगी।</p>
+      <button class="primary" id="saveSale">बिक्री सेव करें</button>
+    </div>
+    <div class="card"><div class="rowhead"><h2>इस तारीख की बिक्री</h2><span class="pill" id="sCount">0 एंट्री</span></div><div id="salesList"></div></div>
+  </section>
+
+  <section id="daily" class="panel">
+    <div class="card">
+      <h2>दैनिक रिपोर्ट</h2>
+      <label>रिपोर्ट की तारीख</label><input type="date" id="dDate">
+      <div class="grid" style="margin-top:12px">
+        <div class="metric"><small>कुल मंडी खरीद</small><strong id="dPurchase">₹0</strong></div>
+        <div class="metric"><small>कुल बिक्री</small><strong id="dSales">₹0</strong></div>
+      </div>
+      <div class="metric" style="margin-top:10px"><small>बिक्री − खरीद (अंतर)</small><strong id="dDiff">₹0</strong></div>
+      <div class="note" style="margin-top:10px">यह खरीद और बिक्री का साधारण अंतर है। इसमें दुकान का खर्च, बचा हुआ स्टॉक या खराबा शामिल नहीं है।</div>
+      <h2 style="margin-top:18px">खरीद का विवरण</h2><div id="dPurchaseList"></div>
+      <h2 style="margin-top:18px">बिक्री का विवरण</h2><div id="dSalesList"></div>
+    </div>
+  </section>
+
+  <section id="monthly" class="panel">
+    <div class="card">
+      <h2>मासिक रिपोर्ट</h2>
+      <label>महीना चुनें</label><input type="month" id="mMonth">
+      <div class="grid" style="margin-top:12px">
+        <div class="metric"><small>महीने की कुल खरीद</small><strong id="mPurchase">₹0</strong></div>
+        <div class="metric"><small>महीने की कुल बिक्री</small><strong id="mSales">₹0</strong></div>
+      </div>
+      <div class="metric" style="margin-top:10px"><small>बिक्री − खरीद (अंतर)</small><strong id="mDiff">₹0</strong></div>
+      <h2 style="margin-top:18px">दिन के हिसाब से रिपोर्ट</h2><div id="mList"></div>
+    </div>
+  </section>
+  <div class="card">
+    <div class="rowhead"><strong>डेटा बैकअप</strong><button class="secondary" id="exportBtn">डाउनलोड बैकअप</button></div>
+    <p class="note">आपका हिसाब इसी मोबाइल के इसी ब्राउजर में सेव होता है। मोबाइल/ब्राउजर का डेटा साफ करने से पहले बैकअप डाउनलोड कर लें। दूसरे मोबाइल पर अपने-आप सिंक नहीं होगा।</p>
+    <label>बैकअप वापस लाएँ (JSON फ़ाइल)</label><input type="file" id="importFile" accept=".json,application/json">
+  </div>
+</main>
+<footer>आपका रोज़ का हिसाब • सरल और निजी</footer>
+<script>
+const $=id=>document.getElementById(id), key='plsz_ledger_v1';
+let db={purchases:[],sales:[]};
+try{const saved=localStorage.getItem(key);if(saved)db=JSON.parse(saved)}catch(e){}
+const today=new Date().toLocaleDateString('en-CA');
+['pDate','sDate','dDate'].forEach(id=>$(id).value=today);
+$('mMonth').value=today.slice(0,7);
+const money=n=>'₹'+(Number(n)||0).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
+const num=id=>Number($(id).value)||0;
+const save=()=>localStorage.setItem(key,JSON.stringify(db));
+const sum=(arr)=>arr.reduce((a,x)=>a+Number(x.amount||0),0);
+function table(rows,kind){if(!rows.length)return '<div class="empty">अभी कोई एंट्री नहीं है।</div>';
+let heads=kind==='p'?'<th>नाम</th><th>किलो</th><th>भाव</th><th>रकम</th><th></th>':'<th>नाम</th><th>किलो</th><th>बिक्री</th><th></th>';
+let body=rows.map(x=>`<tr><td>${esc(x.name)}</td><td>${x.kg}</td>${kind==='p'?`<td>${money(x.rate)}</td>`:''}<td>${money(x.amount)}</td><td><button class="danger" onclick="removeEntry('${kind}','${x.id}')">हटाएँ</button></td></tr>`).join('');
+return `<div class="tablewrap"><table><thead><tr>${heads}</tr></thead><tbody>${body}</tbody></table></div>`}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function renderLists(){
+let pd=$('pDate').value,sd=$('sDate').value;
+let ps=db.purchases.filter(x=>x.date===pd),ss=db.sales.filter(x=>x.date===sd);
+$('purchaseList').innerHTML=table(ps,'p');$('salesList').innerHTML=table(ss,'s');
+$('pCount').textContent=ps.length+' एंट्री';$('sCount').textContent=ss.length+' एंट्री';
+}
+function daily(){
+let d=$('dDate').value,ps=db.purchases.filter(x=>x.date===d),ss=db.sales.filter(x=>x.date===d);
+let a=sum(ps),b=sum(ss);$('dPurchase').textContent=money(a);$('dSales').textContent=money(b);$('dDiff').textContent=money(b-a);$('dDiff').style.color=b-a>=0?'#15803d':'#b42318';
+$('dPurchaseList').innerHTML=table(ps,'p');$('dSalesList').innerHTML=table(ss,'s');
+}
+function monthly(){
+let m=$('mMonth').value,ps=db.purchases.filter(x=>x.date.startsWith(m)),ss=db.sales.filter(x=>x.date.startsWith(m));
+let a=sum(ps),b=sum(ss);$('mPurchase').textContent=money(a);$('mSales').textContent=money(b);$('mDiff').textContent=money(b-a);$('mDiff').style.color=b-a>=0?'#15803d':'#b42318';
+let days=[...new Set([...ps,...ss].map(x=>x.date))].sort();
+$('mList').innerHTML=days.length?'<div class="tablewrap"><table><thead><tr><th>तारीख</th><th>खरीद</th><th>बिक्री</th><th>अंतर</th></tr></thead><tbody>'+days.map(d=>{let p=sum(ps.filter(x=>x.date===d)),s=sum(ss.filter(x=>x.date===d));return `<tr><td>${d}</td><td>${money(p)}</td><td>${money(s)}</td><td>${money(s-p)}</td></tr>`}).join('')+'</tbody></table></div>':'<div class="empty">इस महीने अभी कोई रिकॉर्ड नहीं है।</div>';
+}
+function render(){renderLists();daily();monthly()}
+$('pKg').addEventListener('input',()=> $('pTotal').textContent='कुल खरीद: '+money(num('pKg')*num('pRate')));
+$('pRate').addEventListener('input',()=> $('pTotal').textContent='कुल खरीद: '+money(num('pKg')*num('pRate')));
+$('savePurchase').onclick=()=>{
+let name=$('pName').value.trim(),kg=num('pKg'),rate=num('pRate'),date=$('pDate').value;
+if(!date||!name||kg<=0||rate<0||$('pRate').value===''){alert('तारीख, सब्जी का नाम, किलो और खरीद भाव भरें।');return}
+db.purchases.push({id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),date,name,kg,rate,amount:kg*rate});save();$('pName').value='';$('pKg').value='';$('pRate').value='';$('pTotal').textContent='कुल खरीद: ₹0.00';render();alert('मंडी खरीद सेव हो गई।')
+};
+$('saveSale').onclick=()=>{
+let name=$('sName').value.trim(),kg=num('sKg'),amount=num('sAmount'),date=$('sDate').value;
+if(!date||!name||kg<=0||$('sAmount').value===''||amount<0){alert('तारीख, सब्जी का नाम, किलो और बिक्री की रकम भरें।');return}
+let old=db.sales.find(x=>x.date===date&&x.name.toLocaleLowerCase()===name.toLocaleLowerCase());
+if(old){old.kg=kg;old.amount=amount}else db.sales.push({id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),date,name,kg,amount});
+save();$('sName').value='';$('sKg').value='';$('sAmount').value='';render();alert(old?'पुरानी बिक्री एंट्री अपडेट हो गई।':'बिक्री सेव हो गई।')
+};
+window.removeEntry=(kind,id)=>{if(!confirm('क्या यह एंट्री हटानी है?'))return;if(kind==='p')db.purchases=db.purchases.filter(x=>x.id!==id);else db.sales=db.sales.filter(x=>x.id!==id);save();render()};
+['pDate','sDate','dDate','mMonth'].forEach(id=>$(id).addEventListener('change',render));
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.panel').forEach(x=>x.classList.toggle('active',x.id===b.dataset.tab));render()});
+$('exportBtn').onclick=()=>{let blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='padha-likha-sabjiwalaz-backup-'+today+'.json';a.click();URL.revokeObjectURL(a.href)};
+$('importFile').onchange=async e=>{let f=e.target.files[0];if(!f)return;try{let x=JSON.parse(await f.text());if(!Array.isArray(x.purchases)||!Array.isArray(x.sales))throw Error();if(confirm('मौजूदा रिकॉर्ड की जगह बैकअप रिकॉर्ड लोड करें?')){db=x;save();render();alert('बैकअप वापस आ गया।')}}catch(err){alert('यह सही बैकअप फ़ाइल नहीं है।')}e.target.value=''};
+render();
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+}
+</script>
+</body></html>

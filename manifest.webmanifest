@@ -1,0 +1,15 @@
+{
+  "name": "पढ़ा-लिखा सब्जीवालाज हिसाब",
+  "short_name": "सब्जीवालाज",
+  "description": "मंडी खरीद, बिक्री और दैनिक-मासिक हिसाब",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f3f7f3",
+  "theme_color": "#166534",
+  "lang": "hi",
+  "icons": [
+    {"src": "./icon-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "./icon-512.png", "sizes": "512x512", "type": "image/png"}
+  ]
+}
